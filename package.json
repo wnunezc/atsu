@@ -1,0 +1,19 @@
+{
+  "name": "atsu-extension",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Development and verification tooling for the ATSU browser extension.",
+  "type": "module",
+  "scripts": {
+    "check:static": "node scripts/validate-static.mjs",
+    "check:secrets": "node scripts/check-secrets.mjs",
+    "test:unit": "vitest run",
+    "test:smoke": "node test/smoke/extension-smoke.mjs",
+    "verify": "npm run check:static && npm run check:secrets && npm run test:unit && npm run test:smoke"
+  },
+  "devDependencies": {
+    "jsdom": "29.1.1",
+    "playwright-core": "1.61.0",
+    "vitest": "4.1.9"
+  }
+}
