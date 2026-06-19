@@ -2,31 +2,9 @@
 (() => {
   'use strict';
 
-  const COLOR_PROFILES = Object.freeze({
-    none: { normal: '#2368a2', visited: '#5f4b8b', closed: '#6a737c' },
-    soft: { normal: '#2368a2', visited: '#5f4b8b', closed: '#6a737c' },
-    medium: { normal: '#0077cc', visited: '#6f42c1', closed: '#8a6d3b' },
-    strong: { normal: '#d6006f', visited: '#551a8b', closed: '#77706f' },
-    custom: null
-  });
+  const { COLOR_PROFILES, DEFAULT_SITE_CONFIG, normalizeSiteConfig } = ATSUConfig;
 
-  const DEFAULT_CONFIG = Object.freeze({
-    enabled: false,
-    newPosts: true,
-    comments: true,
-    languageDetection: true,
-    expectedLanguage: 'auto',
-    mreDetection: true,
-    codePostDetection: true,
-    colors: true,
-    debug: false,
-    smartTemplates: true,
-    commentMaxSuggestions: 2,
-    colorProfile: 'soft',
-    rgbColors: { ...COLOR_PROFILES.soft }
-  });
-
-  const state = { supported: false, origin: '', url: '', config: { ...DEFAULT_CONFIG } };
+  const state = { supported: false, origin: '', url: '', config: normalizeSiteConfig() };
   const elements = {};
 
   function sendMessage(message) {
@@ -69,25 +47,6 @@
       .forEach((id) => { elements[id.replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
   }
 
-  function normalizeConfig(config) {
-    const source = config && typeof config === 'object' ? config : {};
-    const colors = source.rgbColors && typeof source.rgbColors === 'object' ? source.rgbColors : {};
-    const profile = COLOR_PROFILES[source.colorProfile] === undefined ? 'soft' : source.colorProfile;
-    const profileColors = COLOR_PROFILES[profile] || {};
-    return {
-      ...DEFAULT_CONFIG,
-      ...source,
-      commentMaxSuggestions: Math.max(1, Math.min(3, Number(source.commentMaxSuggestions || DEFAULT_CONFIG.commentMaxSuggestions))),
-      colorProfile: profile,
-      colors: profile === 'none' ? false : Boolean(source.colors ?? DEFAULT_CONFIG.colors),
-      rgbColors: {
-        ...DEFAULT_CONFIG.rgbColors,
-        ...profileColors,
-        ...colors
-      }
-    };
-  }
-
   function getSelectedProfileColors() {
     const profile = elements.colorProfile.value;
     if (profile !== 'custom' && COLOR_PROFILES[profile]) {
@@ -105,7 +64,7 @@
     elements.unsupported.classList.toggle('hidden', state.supported);
     elements.settings.classList.toggle('hidden', !state.supported);
 
-    const config = normalizeConfig(state.config);
+    const config = normalizeSiteConfig(state.config);
     elements.enabled.checked = config.enabled;
     elements.newPosts.checked = config.newPosts;
     elements.comments.checked = config.comments;
@@ -160,7 +119,7 @@
 
   function getConfigFromForm() {
     const profile = elements.colorProfile.value;
-    return normalizeConfig({
+    return normalizeSiteConfig({
       enabled: elements.enabled.checked,
       newPosts: elements.newPosts.checked,
       comments: elements.comments.checked,
@@ -193,7 +152,7 @@
       elements.save.disabled = false;
       return;
     }
-    state.config = normalizeConfig(response.config);
+    state.config = normalizeSiteConfig(response.config);
     elements.status.textContent = 'Saved. Reloading tab…';
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tab = tabs && tabs.length > 0 ? tabs[0] : null;
@@ -203,7 +162,7 @@
   }
 
   function reset() {
-    state.config = normalizeConfig(DEFAULT_CONFIG);
+    state.config = normalizeSiteConfig(DEFAULT_SITE_CONFIG);
     render();
     previewColors();
   }
@@ -235,7 +194,7 @@
       elements.status.textContent = 'Settings imported. Reload the page to apply all changes.';
       const active = await sendMessage({ action: 'ATSU_GET_ACTIVE_STATE' });
       if (active && active.ok) {
-        state.config = normalizeConfig(active.config);
+        state.config = normalizeSiteConfig(active.config);
         render();
       }
     } catch (error) {
@@ -252,7 +211,7 @@
       elements.status.textContent = response && response.error ? response.error : 'Could not reset settings.';
       return;
     }
-    state.config = normalizeConfig(DEFAULT_CONFIG);
+    state.config = normalizeSiteConfig(DEFAULT_SITE_CONFIG);
     render();
     elements.status.textContent = 'All settings reset.';
   }
@@ -298,7 +257,7 @@
     state.supported = Boolean(response.supported);
     state.origin = response.origin || '';
     state.url = response.url || '';
-    state.config = normalizeConfig(response.config);
+    state.config = normalizeSiteConfig(response.config);
     render();
   }
 

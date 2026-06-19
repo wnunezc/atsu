@@ -60,6 +60,7 @@
         "https://*.mathoverflow.net/*"
       ],
       "js": [
+        "src/js/shared/config.js",
         "src/js/content.js"
       ],
       "run_at": "document_idle"

@@ -10,6 +10,8 @@
 (() => {
   'use strict';
 
+  const { COLOR_PROFILES, getQuestionIdFromUrl, normalizeQuestionId, normalizeSiteConfig } = ATSUConfig;
+
   const ATSU = {
     ids: {
       style: 'atsu-v2-style',
@@ -28,41 +30,6 @@
       newPostCount: 0
     }
   };
-
-  const COLOR_PROFILES = Object.freeze({
-    none: { normal: '#2368a2', visited: '#5f4b8b', closed: '#6a737c' },
-    soft: { normal: '#2368a2', visited: '#5f4b8b', closed: '#6a737c' },
-    medium: { normal: '#0077cc', visited: '#6f42c1', closed: '#8a6d3b' },
-    strong: { normal: '#d6006f', visited: '#551a8b', closed: '#77706f' },
-    custom: null
-  });
-
-  function normalizeConfig(config) {
-    const source = config && typeof config === 'object' ? config : {};
-    const colors = source.rgbColors && typeof source.rgbColors === 'object' ? source.rgbColors : {};
-    const profile = COLOR_PROFILES[source.colorProfile] === undefined ? 'soft' : source.colorProfile;
-    const profileColors = COLOR_PROFILES[profile] || {};
-
-    return {
-      enabled: false,
-      newPosts: true,
-      comments: true,
-      languageDetection: true,
-      expectedLanguage: 'auto',
-      mreDetection: true,
-      codePostDetection: true,
-      colors: profile === 'none' ? false : Boolean(source.colors ?? true),
-      debug: Boolean(source.debug),
-      smartTemplates: source.smartTemplates !== false,
-      commentMaxSuggestions: Math.max(1, Math.min(3, Number(source.commentMaxSuggestions || 2))),
-      colorProfile: profile,
-      rgbColors: {
-        ...COLOR_PROFILES.soft,
-        ...profileColors,
-        ...colors
-      }
-    };
-  }
 
   const SELECTORS = {
     sidebars: ['#sidebar', '.right-sidebar', 'aside[role="complementary"]'],
@@ -1359,7 +1326,7 @@
   }
 
   async function markQuestionVisited(questionId, link = null) {
-    const cleanId = String(questionId || '').trim();
+    const cleanId = normalizeQuestionId(questionId);
 
     if (!cleanId || isQuestionIdVisited(cleanId)) {
       if (link) {
@@ -1418,8 +1385,7 @@
   function getQuestionIdFromLink(link) {
     try {
       const href = link.getAttribute('href') || '';
-      const match = href.match(/\/questions\/(\d+)/);
-      return match ? match[1] : href;
+      return getQuestionIdFromUrl(href, window.location.origin);
     } catch (error) {
       return '';
     }
@@ -1637,7 +1603,7 @@
       return;
     }
 
-    ATSU.state.config = normalizeConfig(response.config);
+    ATSU.state.config = normalizeSiteConfig(response.config);
     ATSU.state.origin = response.origin || window.location.origin;
     ATSU.state.visitedQuestionIds = new Set(Array.isArray(response.visitedQuestionIds) ? response.visitedQuestionIds.map(String) : []);
 
