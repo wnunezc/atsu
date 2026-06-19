@@ -217,14 +217,49 @@
   }
 
   function bindTabs() {
-    document.querySelectorAll('.tab').forEach((tab) => {
+    const tabs = [...document.querySelectorAll('.tab')];
+
+    function activateTab(tab, focus = false) {
+      document.querySelectorAll('.tab').forEach((node) => {
+        const active = node === tab;
+        node.classList.toggle('active', active);
+        node.setAttribute('aria-selected', String(active));
+        node.tabIndex = active ? 0 : -1;
+      });
+      document.querySelectorAll('.tab-panel').forEach((node) => {
+        node.classList.toggle('active', node.dataset.panel === tab.dataset.tab);
+      });
+      if (focus) {
+        tab.focus();
+      }
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('aria-selected', String(tab.classList.contains('active')));
+      tab.tabIndex = tab.classList.contains('active') ? 0 : -1;
       tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach((node) => node.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach((node) => node.classList.remove('active'));
-        tab.classList.add('active');
-        document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+        activateTab(tab);
+      });
+      tab.addEventListener('keydown', (event) => {
+        const keyOffsets = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+        let nextIndex = index;
+        if (Object.prototype.hasOwnProperty.call(keyOffsets, event.key)) {
+          nextIndex = (index + keyOffsets[event.key] + tabs.length) % tabs.length;
+        } else if (event.key === 'Home') {
+          nextIndex = 0;
+        } else if (event.key === 'End') {
+          nextIndex = tabs.length - 1;
+        } else {
+          return;
+        }
+        event.preventDefault();
+        activateTab(tabs[nextIndex], true);
       });
     });
+
+    document.querySelector('.tabs').setAttribute('role', 'tablist');
+    document.querySelectorAll('.tab-panel').forEach((panel) => panel.setAttribute('role', 'tabpanel'));
   }
 
   function bindEvents() {

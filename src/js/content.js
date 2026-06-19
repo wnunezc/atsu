@@ -25,6 +25,8 @@
       origin: window.location.origin,
       suggestions: [],
       observer: null,
+      pendingRoots: new Set(),
+      refreshScheduled: false,
       initialQuestionIds: new Set(),
       visitedQuestionIds: new Set(),
       newPostCount: 0
@@ -190,6 +192,14 @@
       });
     });
 
+    return elements;
+  }
+
+  function queryAllIncludingRoot(root, selectors) {
+    const elements = queryAll(root, selectors);
+    if (root instanceof Element && selectors.some((selector) => root.matches(selector))) {
+      elements.unshift(root);
+    }
     return elements;
   }
 
@@ -1184,6 +1194,9 @@
   function openCommentAssistant(textarea) {
     const strings = t();
     const commentContext = getCommentContext(textarea);
+    const previouslyFocused = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : textarea;
     const existing = document.getElementById(ATSU.ids.modal);
 
     if (existing) {
@@ -1200,6 +1213,8 @@
     dialog.setAttribute('aria-modal', 'true');
 
     const title = document.createElement('h2');
+    title.id = 'atsu-v2-modal-title';
+    dialog.setAttribute('aria-labelledby', title.id);
     title.textContent = commentContext.postType === 'answer'
       ? `${strings.modalTitle} (${getLanguage() === 'ES' ? 'respuesta' : 'answer'})`
       : `${strings.modalTitle} (${getLanguage() === 'ES' ? 'pregunta' : 'question'})`;
@@ -1247,7 +1262,23 @@
     const close = document.createElement('button');
     close.type = 'button';
     close.textContent = strings.close;
-    close.addEventListener('click', () => modal.remove());
+
+    function closeModal() {
+      document.removeEventListener('keydown', handleModalKeydown);
+      modal.remove();
+      if (previouslyFocused && previouslyFocused.isConnected) {
+        previouslyFocused.focus();
+      }
+    }
+
+    function handleModalKeydown(event) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeModal();
+      }
+    }
+
+    close.addEventListener('click', closeModal);
 
     const insert = document.createElement('button');
     insert.type = 'button';
@@ -1257,6 +1288,7 @@
       textarea.dispatchEvent(new Event('input', { bubbles: true }));
       textarea.dispatchEvent(new Event('change', { bubbles: true }));
       textarea.focus();
+      document.removeEventListener('keydown', handleModalKeydown);
       modal.remove();
     });
 
@@ -1269,18 +1301,21 @@
 
     modal.addEventListener('click', (event) => {
       if (event.target === modal) {
-        modal.remove();
+        closeModal();
       }
     });
+    document.addEventListener('keydown', handleModalKeydown);
+    const firstCheckbox = form.querySelector('input[type="checkbox"]');
+    (firstCheckbox || close).focus();
   }
 
-  function attachCommentAssistant() {
+  function attachCommentAssistant(root = document) {
     if (!ATSU.state.config || !ATSU.state.config.comments) {
       return;
     }
 
     const strings = t();
-    const textareas = queryAll(document, SELECTORS.commentTextareas);
+    const textareas = queryAllIncludingRoot(root, SELECTORS.commentTextareas);
 
     textareas.forEach((textarea) => {
       if (textarea.dataset.atsuCommentReady === '1') {
@@ -1392,13 +1427,13 @@
   }
 
   function getCardsFromRoot(root) {
-    const cards = queryAll(root, SELECTORS.questionCards);
+    const cards = queryAllIncludingRoot(root, SELECTORS.questionCards);
 
     if (cards.length > 0) {
       return cards;
     }
 
-    return queryAll(root, SELECTORS.questionLinks)
+    return queryAllIncludingRoot(root, SELECTORS.questionLinks)
       .map((link) => link.closest('div, article, section, li'))
       .filter(Boolean);
   }
@@ -1532,65 +1567,81 @@
     showToast.timer = window.setTimeout(() => toast.remove(), 4500);
   }
 
-  function watchNewPosts() {
+  function processDynamicQuestions(root) {
     if (!ATSU.state.config || !ATSU.state.config.newPosts || isQuestionPage()) {
       return;
     }
 
-    const list = queryFirst(document, SELECTORS.questionLists);
+    getCardsFromRoot(root).forEach((card) => {
+      const link = getQuestionTitleLink(card);
+      if (!link) {
+        return;
+      }
 
-    if (!list || ATSU.state.observer) {
+      if (isClosedQuestionCard(card, link)) {
+        ensureQuestionBadge(link, 'closed');
+      }
+
+      const id = getQuestionIdFromLink(link);
+      if (!id || isQuestionIdVisited(id)) {
+        removeNewBadgeFromLink(link);
+        return;
+      }
+
+      if (!ATSU.state.initialQuestionIds.has(id)) {
+        ATSU.state.initialQuestionIds.add(id);
+        ATSU.state.newPostCount += 1;
+        showToast(`${t().newPost}: ${ATSU.state.newPostCount}`);
+      }
+      markNewQuestionCard(card);
+    });
+  }
+
+  function flushDynamicRoots() {
+    ATSU.state.refreshScheduled = false;
+    if (!document.defaultView) {
+      ATSU.state.pendingRoots.clear();
+      return;
+    }
+
+    const roots = [...ATSU.state.pendingRoots];
+    ATSU.state.pendingRoots.clear();
+    roots.forEach((root) => {
+      attachCommentAssistant(root);
+      markClosedQuestionCards(root);
+      markVisibleNewQuestionCards(root);
+      processDynamicQuestions(root);
+    });
+  }
+
+  function scheduleDynamicRefresh(root) {
+    ATSU.state.pendingRoots.add(root);
+    if (ATSU.state.refreshScheduled) {
+      return;
+    }
+    ATSU.state.refreshScheduled = true;
+    const schedule = typeof requestAnimationFrame === 'function'
+      ? requestAnimationFrame
+      : (callback) => setTimeout(callback, 0);
+    schedule(flushDynamicRoots);
+  }
+
+  function startDynamicObserver() {
+    if (!document.body || ATSU.state.observer) {
       return;
     }
 
     registerInitialQuestions();
-
     ATSU.state.observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         mutation.addedNodes.forEach((node) => {
-          if (!(node instanceof Element)) {
-            return;
+          if (node instanceof Element) {
+            scheduleDynamicRefresh(node);
           }
-
-          getCardsFromRoot(node).forEach((card) => {
-            const link = getQuestionTitleLink(card);
-
-            if (!link) {
-              return;
-            }
-
-            if (isClosedQuestionCard(card, link)) {
-              ensureQuestionBadge(link, 'closed');
-            }
-
-            const id = getQuestionIdFromLink(link);
-
-            if (!id || isQuestionIdVisited(id)) {
-              removeNewBadgeFromLink(link);
-              return;
-            }
-
-            if (!ATSU.state.initialQuestionIds.has(id)) {
-              ATSU.state.initialQuestionIds.add(id);
-              ATSU.state.newPostCount += 1;
-              showToast(`${t().newPost}: ${ATSU.state.newPostCount}`);
-            }
-
-            markNewQuestionCard(card);
-          });
         });
       });
     });
-
-    ATSU.state.observer.observe(list, {
-      childList: true,
-      subtree: true
-    });
-  }
-
-  function observeDynamicCommentForms() {
-    const observer = new MutationObserver(() => attachCommentAssistant());
-    observer.observe(document.body, { childList: true, subtree: true });
+    ATSU.state.observer.observe(document.body, { childList: true, subtree: true });
   }
 
   async function boot() {
@@ -1618,8 +1669,7 @@
     markClosedQuestionCards(document);
     markVisibleNewQuestionCards(document);
     attachCommentAssistant();
-    observeDynamicCommentForms();
-    watchNewPosts();
+    startDynamicObserver();
   }
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
