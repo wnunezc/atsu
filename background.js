@@ -172,7 +172,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     if (action === 'ATSU_SAVE_SITE_CONFIG') {
-      const origin = getOriginFromUrl(message.url || '') || message.origin;
+      const origin = getOriginFromUrl(message.url || message.origin || '');
 
       if (!origin || !isSupportedStackExchangeUrl(origin)) {
         sendResponse({ ok: false, error: 'Unsupported Stack Exchange URL.' });
@@ -192,7 +192,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
     if (action === 'ATSU_MARK_QUESTION_VISITED') {
-      const origin = getOriginFromUrl(message.url || '') || message.origin;
+      const origin = getOriginFromUrl(message.url || message.origin || '');
       const result = await markQuestionVisited(origin, message.questionId);
       sendResponse({ ok: true, ...result });
       return;

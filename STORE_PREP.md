@@ -4,7 +4,7 @@ This file documents the current publication-readiness state of ATSU 1.0.0.
 
 ## Current status
 
-ATSU 1.0.0 is under manual validation. It is not yet guaranteed to be accepted by Chrome Web Store review because final listing text, screenshots, owner account details, privacy declarations, and the technical findings from the initial audit must be resolved by the publisher.
+ATSU 1.0.0 includes automated static, unit, security, and isolated Chromium smoke validation. Chrome Web Store acceptance still depends on final listing text, screenshots, owner account details, privacy declarations, and manual checks against live Stack Exchange pages by the publisher.
 
 ## Implemented publication improvements
 
@@ -17,6 +17,7 @@ ATSU 1.0.0 is under manual validation. It is not yet guaranteed to be accepted b
 - No remote AI processing.
 - Local settings export/import.
 - Privacy policy draft included in `PRIVACY_POLICY.md`.
+- Automated checks for settings, storage concurrency, dynamic DOM behavior, keyboard accessibility, secrets, and Manifest V3 loading.
 
 ## Chrome Web Store checklist
 

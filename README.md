@@ -32,6 +32,29 @@ chrome://extensions/
 6. Select the `atsu` folder.
 7. Open a supported Stack Exchange page and enable ATSU from the popup.
 
+## Development and verification
+
+The extension runs directly from source and does not require a production build.
+
+```text
+npm install
+npm run verify
+```
+
+`npm run verify` checks JavaScript syntax, JSON files, the public `1.0.0` version, tracked files for common secrets, unit tests, and an isolated headless-Chromium smoke test.
+
+Runtime files:
+
+- `background.js`;
+- `src/js/shared/config.js` and `src/js/shared/storage.js`;
+- `src/js/content.js`;
+- `src/js/popup.js`, `src/html/popup.html`, and `src/css/popup.css`.
+
+Reference data:
+
+- `src/json/urls.json`: static catalog snapshot used for documentation and validation, not loaded at runtime;
+- `src/json/lang/*.json`: legacy language reference data, not loaded at runtime. Current UI strings live in the JavaScript runtime.
+
 ## Recommended test sites
 
 ```text

@@ -4,6 +4,9 @@ import { readFileSync } from 'node:fs';
 const trackedFiles = execFileSync('git', ['ls-files', '-z'], {
   encoding: 'utf8'
 }).split('\0').filter(Boolean);
+const ignoredTrackedFiles = execFileSync('git', ['ls-files', '-ci', '--exclude-standard', '-z'], {
+  encoding: 'utf8'
+}).split('\0').filter(Boolean);
 
 const forbiddenNames = [
   /^\.env(?:\.|$)/i,
@@ -19,6 +22,10 @@ const secretPatterns = [
 ];
 
 const findings = [];
+
+ignoredTrackedFiles.forEach((file) => {
+  findings.push(`${file}: ignored file is tracked`);
+});
 
 for (const file of trackedFiles) {
   if (forbiddenNames.some((pattern) => pattern.test(file))) {

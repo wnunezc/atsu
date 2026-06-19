@@ -4,6 +4,8 @@
 
 ATSU has moved from a rescue build into initial version `1.0.0`. The extension has a Manifest V3 base, restricted host permissions, a compact popup, local diagnostics, smarter templates, portable settings, and publication-preparation documentation.
 
+The initial engineering audit was followed by stabilization work that centralized configuration validation, serialized visited-question writes, coordinated dynamic DOM updates, improved keyboard accessibility, and added repeatable automated verification.
+
 ## What was rescued
 
 - Stack Exchange site targeting.

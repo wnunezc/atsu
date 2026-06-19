@@ -16,3 +16,8 @@
 - `NEW` / `NUEVO` badges for locally unvisited questions.
 - `CLOSED` / `CERRADA` badges when explicit closed or duplicate markers are available.
 - Privacy policy and Chrome Web Store preparation notes.
+- Centralized validation for settings, supported origins, colors, imports, and question IDs.
+- Serialized visited-question writes to prevent concurrent updates from losing data.
+- Coordinated dynamic DOM processing to preserve badges and comment controls without duplicate observers.
+- Keyboard navigation for popup tabs and accessible Escape/focus handling in the comment dialog.
+- Permanent unit, static, secret-scan, and isolated Chromium smoke tests.
