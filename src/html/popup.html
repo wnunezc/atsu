@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ATSU 1.0.0</title>
+  <link rel="stylesheet" href="../css/popup.css">
+</head>
+<body>
+  <header class="header">
+    <img src="../media/48.png" alt="ATSU" class="logo">
+    <div>
+      <h1>ATSU 1.0.0</h1>
+      <div class="subtitle">Stack Exchange toolkit</div>
+    </div>
+  </header>
+
+  <section class="site-summary">
+    <div class="label-title">Current site</div>
+    <div id="site-origin" class="origin">Checking current tab…</div>
+    <div id="status-pill" class="pill">Loading</div>
+  </section>
+
+  <section id="unsupported" class="notice hidden">
+    ATSU only runs on Stack Overflow, Stack Exchange, Super User, Server Fault, Ask Ubuntu, Stack Apps and MathOverflow.
+  </section>
+
+  <nav class="tabs" aria-label="ATSU settings tabs">
+    <button type="button" class="tab active" data-tab="general">General</button>
+    <button type="button" class="tab" data-tab="comments">Comments</button>
+    <button type="button" class="tab" data-tab="colors">Colors</button>
+    <button type="button" class="tab" data-tab="data">Data</button>
+  </nav>
+
+  <main id="settings" class="card hidden">
+    <section class="tab-panel active" data-panel="general">
+      <label class="switch-row">
+        <span><b>Enable ATSU</b><small>Stored per site origin.</small></span>
+        <input id="enabled" type="checkbox">
+      </label>
+      <label class="switch-row">
+        <span><b>Badge unvisited questions</b><small>Shows NEW/NUEVO on question links ATSU has not seen you open yet.</small></span>
+        <input id="newPosts" type="checkbox">
+      </label>
+      <label class="switch-row">
+        <span><b>Language check</b><small>Local heuristic only.</small></span>
+        <input id="languageDetection" type="checkbox">
+      </label>
+      <label class="switch-row">
+        <span><b>Diagnostics mode</b><small>Shows detected page/post details in the ATSU panel.</small></span>
+        <input id="debug" type="checkbox">
+      </label>
+      <label class="field-row">
+        <span><b>Expected language</b><small>Auto: Spanish on es.stackoverflow.com, English otherwise.</small></span>
+        <select id="expectedLanguage">
+          <option value="auto">Auto</option>
+          <option value="EN">English</option>
+          <option value="ES">Español</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="tab-panel" data-panel="comments">
+      <label class="switch-row">
+        <span><b>Comment assistant</b><small>Adds an ATSU button near comment boxes.</small></span>
+        <input id="comments" type="checkbox">
+      </label>
+      <label class="switch-row">
+        <span><b>Smart templates</b><small>Uses technical, answer and Meta-specific templates.</small></span>
+        <input id="smartTemplates" type="checkbox">
+      </label>
+      <label class="switch-row">
+        <span><b>Detect missing MRE</b><small>Disabled automatically on Meta-style pages.</small></span>
+        <input id="mreDetection" type="checkbox">
+      </label>
+      <label class="switch-row">
+        <span><b>Detect code-heavy posts</b><small>Warns when code seems to dominate the post.</small></span>
+        <input id="codePostDetection" type="checkbox">
+      </label>
+      <label class="field-row">
+        <span><b>Default suggestions</b><small>Maximum checked suggestions per generated comment.</small></span>
+        <select id="commentMaxSuggestions">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="tab-panel" data-panel="colors">
+      <label class="switch-row">
+        <span><b>Highlight question links</b><small>Can be disabled or controlled with profiles.</small></span>
+        <input id="colors" type="checkbox">
+      </label>
+      <label class="field-row">
+        <span><b>Color profile</b><small>Custom unlocks manual color pickers.</small></span>
+        <select id="colorProfile">
+          <option value="none">None</option>
+          <option value="soft">Soft</option>
+          <option value="medium">Medium</option>
+          <option value="strong">Strong</option>
+          <option value="custom">Custom</option>
+        </select>
+      </label>
+      <div id="color-options" class="colors">
+        <label class="color-field"><span>Normal</span><input id="colorNormal" type="color"></label>
+        <label class="color-field"><span>Visited</span><input id="colorVisited" type="color"></label>
+        <label class="color-field"><span>Closed</span><input id="colorClosed" type="color"></label>
+      </div>
+    </section>
+
+    <section class="tab-panel" data-panel="data">
+      <div class="stacked-actions">
+        <button id="exportSettings" type="button" class="secondary">Export settings JSON</button>
+        <button id="importSettings" type="button" class="secondary">Import settings JSON</button>
+        <input id="importFile" type="file" accept="application/json,.json" hidden>
+        <button id="resetAll" type="button" class="danger">Reset all ATSU settings</button>
+      </div>
+      <p class="small-copy">Import/export uses local JSON only. ATSU does not send this file anywhere.</p>
+    </section>
+  </main>
+
+  <footer class="actions">
+    <button id="reset" class="secondary" type="button">Reset site</button>
+    <button id="save" class="primary" type="button">Save & reload</button>
+  </footer>
+  <div id="status" class="status"></div>
+
+  <script src="../js/popup.js"></script>
+</body>
+</html>

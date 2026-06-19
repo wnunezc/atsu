@@ -1,0 +1,28 @@
+{
+    "atsu_sugestion": "ATSU - Suggestion!",
+    "qa": {
+        "content1": "It seems to lack a good explanation; It is important that the questions contain an explanation as precisely as possible.",
+        "content2": "It seems that the code provided is sparse; validate that you have all the elements you need to give a good answer. you can leave a comment if necessary.",
+        "post1": "A code or a Minimum Reproducible Example (MRE) appears to be missing. If so, you can request it in a comment.",
+        "post2": "It seems that the code provided is little; validate that you have everything you need to give a good response.",
+        "spam": "Apparently this post may be spam!",
+        "noformatcode": "Apparently this post contains raw code!",
+        "onlyimg": "It was detected that this question contains Images, but lacks useful content to receive a good answer; You can leave a warning comment for the user or request an improvement in the data or format!",
+        "notlang1": "Apparently, this post is not in the Accepted Language!; defined Language: English.",
+        "notlang2": "Apparently, this publication contains information in a language other than the accepted one!; defined Language: English.",
+        "newuser": "Apparently this user is relatively new! be careful with the comments and answers you give him, remember that he is in a learning stage of the tools offered by the network, guide him if possible to edit and create a good post."
+    },
+    "comment":{
+        "0":"Hi, friend",
+        "1":" Welcome to the {site}",
+        "2":" I have verified your post and I comment the following:",
+        "3":" You have not given an exact explanation of your situation or problem",
+        "4":" I recommend you read this article [ask]",
+        "5":" It seems to me that your POST is missing a Minimum Reproducible Code or Example",
+        "6":" It seems to me that your POST contains unformatted code",
+        "7":" I recommend you read this Article [mre]",
+        "8":" I have seen that you have added Images, it is preferable that your examples are in text and you must use it",
+        "9":" Tambien es importante que sepas que preguntas son mal vistas [help/dont-ask]",
+        "99":" Hola Amigo, tu Post tiene un problema y esta escrito en un Idioma diferente al del sitio esperado en el Sitio; te recomiendo que lo traduscas al Ingles."
+    }
+}

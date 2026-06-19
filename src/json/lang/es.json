@@ -1,0 +1,30 @@
+{
+    "atsu_sugestion":"ATSU - Sugerencia!",
+    "qa": {
+        "content1": "Parece carecer de una buena explicación; es importante que las preguntas contengan una explicacion lo mas presisa posible.",
+        "content2": "No contiene una explicación o descripción; todas las preguntas deben estar sustentadas para poder obtener una buena respuesta.",
+        "post1": "Parece faltar un código o un Ejemplo Minimo Reproducible (MRE). Si es asi Puedes solicitarlo en un comentario.",
+        "post2": "Parece que el código proporcionado es escaso; valida que tienes todos los elementos que necesitas para dar una buena respuesta. puedes dejar un comentario si hace falta algo.",
+        "spam": "¡Aparentemente, esta publicación puede ser spam!",
+        "noformatcode": "¡Aparentemente, esta publicación contiene código sin formato!",
+        "onlyimg": "¡Se detecto que esta pregunta contiene Imágenes, pero carece de un contenido util para recibir una buena respuesta; puedes dejar un comentario de advertencia para el usuario o solicitar una mejora en los datos o formato!",
+        "notlang1": "¡Aparentemente, esta publicación no está en el idioma aceptado!; Lenguaje definido: Español.",
+        "notlang2": "¡Aparentemente, esta publicación contiene información en un idioma diferente al aceptado!; Lenguaje definido: Español.",
+        "newuser": "Al parecer este usuario es relativamente nuevo! ten cuidado con los comentarios, y respuestas que le des, recuerda que esta en una etapa de aprendisaje de la herramientas que ofrece la red, orientalo si es posible a editar y crear un buen post."
+    },
+    "comment":{
+        "0":"Hola",
+        "1":" Bienvenid@ al {site}, veo que eres nuev@ te recomendaria hacer el [tour] para que conoscas mejor el sitio",
+        "2":" He mirado tu post y te comento lo siguiente:",
+        "3":" No has dado una explicación exacta de tu situación o problema",
+        "4":" Puedes leer este Articulo [ask] para que tu pregunta sea mejor recibida",
+        "5":" Me parece que a tu POST le falta un Codigo o Ejemplo Minimo Reproducible",
+        "6":" Me parece que a tu POST contiene código no formateado",
+        "7":" Puedes leer este Articulo [mre]",
+        "8":" He visto que has agregado Imágenes, es preferible que tus ejemplos sean en texto y facilites el uso del mismo",
+        "9":" También es importante que sepas que preguntas son mal vistas [help/dont-ask]",
+        "99":"Hello Friend, your Post has a problem and is written in a different Language than the expected on the Site; I recommend that you translate it into Spanish.",
+        "100":"BAsada en opiniones invitar al chat",
+        "101":"BAsada en opiniones nuevo usuario"
+    }
+}
