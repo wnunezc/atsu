@@ -1,7 +1,7 @@
 ((root) => {
   'use strict';
 
-  const { isSupportedOrigin, normalizeQuestionId } = root.ATSUConfig;
+  const { getSupportedOrigin, normalizeQuestionId } = root.ATSUConfig;
 
   function createVisitedQuestionStore({ storage, key, maxIdsPerOrigin = 5000 }) {
     if (!storage || typeof storage.get !== 'function' || typeof storage.set !== 'function') {
@@ -22,7 +22,7 @@
       const origins = {};
 
       for (const [origin, rawIds] of Object.entries(rawOrigins)) {
-        if (!isSupportedOrigin(origin) || !Array.isArray(rawIds)) {
+        if (getSupportedOrigin(origin) !== origin || !Array.isArray(rawIds)) {
           continue;
         }
 
@@ -48,7 +48,7 @@
     }
 
     async function getIds(origin) {
-      if (!isSupportedOrigin(origin)) {
+      if (getSupportedOrigin(origin) !== origin) {
         return [];
       }
       await writeQueue.catch(() => {});
@@ -57,7 +57,7 @@
     }
 
     function markVisited(origin, questionId) {
-      if (!isSupportedOrigin(origin)) {
+      if (getSupportedOrigin(origin) !== origin) {
         return Promise.reject(new TypeError('Unsupported origin.'));
       }
       const id = normalizeQuestionId(questionId);

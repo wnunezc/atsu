@@ -65,6 +65,7 @@ describe('visited question storage', () => {
     const store = createVisitedQuestionStore({ storage, key: 'visited', maxIdsPerOrigin: 5000 });
 
     await expect(store.markVisited('https://evil.test', '101')).rejects.toThrow('Unsupported origin');
+    await expect(store.markVisited('https://stackoverflow.com/questions', '101')).rejects.toThrow('Unsupported origin');
     await expect(store.markVisited('https://stackoverflow.com', 'not-an-id')).rejects.toThrow('Invalid question ID');
     expect(storage.data).toEqual({});
   });

@@ -10,7 +10,7 @@
 (() => {
   'use strict';
 
-  const { COLOR_PROFILES, getQuestionIdFromUrl, normalizeQuestionId, normalizeSiteConfig } = ATSUConfig;
+  const { getQuestionIdFromUrl, normalizeQuestionId, normalizeSiteConfig } = ATSUConfig;
 
   const ATSU = {
     ids: {
@@ -508,63 +508,6 @@
     }
 
     return false;
-  }
-
-  function isRecentQuestionListPage() {
-    if (!isQuestionListPage()) {
-      return false;
-    }
-
-    const search = new URLSearchParams(window.location.search);
-    const tab = String(search.get('tab') || '').toLowerCase();
-
-    if (['newest', 'recent', 'new', 'nuevas', 'reciente'].includes(tab)) {
-      return true;
-    }
-
-    const selectedTab = document.querySelector('.s-btn.is-selected, .youarehere, a[aria-current="page"], [aria-selected="true"]');
-    const selectedText = normalizeSpaces(selectedTab ? selectedTab.textContent : '').toLowerCase();
-
-    if (/newest|recent|más reciente|mas reciente|nuevas|nuevos/.test(selectedText)) {
-      return true;
-    }
-
-    const heading = normalizeSpaces(document.querySelector('h1') ? document.querySelector('h1').textContent : '').toLowerCase();
-    return /newest questions|preguntas más nuevas|preguntas mas nuevas|preguntas recientes/.test(heading);
-  }
-
-  function getQuestionCardAgeText(card) {
-    if (!card || !(card instanceof Element)) {
-      return '';
-    }
-
-    const candidates = [
-      '.s-user-card--time',
-      '.relativetime',
-      '[title][class*="relativetime"]',
-      '[class*="started"]',
-      '[class*="user-action-time"]',
-      'time'
-    ];
-
-    const parts = candidates
-      .flatMap((selector) => Array.from(card.querySelectorAll(selector)))
-      .map((element) => normalizeSpaces(`${element.textContent || ''} ${element.getAttribute('title') || ''} ${element.getAttribute('datetime') || ''}`))
-      .filter(Boolean);
-
-    return parts.join(' ').toLowerCase();
-  }
-
-  function isFreshQuestionCard(card) {
-    if (!card || !(card instanceof Element)) {
-      return false;
-    }
-
-    // Important: a page named "Newest" or "Más reciente" is a sorting mode, not proof
-    // that every visible card is new for the user. Mark only cards with very fresh
-    // relative timestamps; dynamically inserted cards are still marked by the observer.
-    const ageText = getQuestionCardAgeText(card);
-    return /\b(now|just now|seconds?|secs?|minutes?|mins?)\b|\bhace\s+(unos?\s+)?(segundos?|minutos?)\b|\bhace\s+\d+\s+(segundos?|minutos?)\b|\b\d+\s+(seconds?|secs?|minutes?|mins?)\s+ago\b/i.test(ageText);
   }
 
   function normalizeSpaces(value) {
