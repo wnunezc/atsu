@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
   "name": "ATSU",
-  "description": "Advanced Toolkit for Stack Overflow and Stack Exchange users, with local diagnostics, comment assistance, color profiles, portable settings, and question-status badges.",
+  "description": "ATSU - Advanced Toolkit for Stack Overflow and Stack Exchange users",
   "version": "1.0.0",
-  "author": "Walter Nuñez",
   "icons": {
     "32": "src/media/32.png",
     "48": "src/media/48.png",
@@ -17,24 +16,20 @@
   "host_permissions": [
     "https://stackoverflow.com/*",
     "https://*.stackoverflow.com/*",
-    "https://serverfault.com/*",
-    "https://*.serverfault.com/*",
     "https://superuser.com/*",
-    "https://*.superuser.com/*",
+    "https://serverfault.com/*",
     "https://askubuntu.com/*",
-    "https://*.askubuntu.com/*",
     "https://stackapps.com/*",
-    "https://*.stackapps.com/*",
-    "https://*.stackexchange.com/*",
     "https://mathoverflow.net/*",
-    "https://*.mathoverflow.net/*"
+    "https://*.mathoverflow.net/*",
+    "https://*.stackexchange.com/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "action": {
     "default_popup": "src/html/popup.html",
-    "default_title": "ATSU - Stack Exchange Toolkit",
+    "default_title": "ATSU - Advanced Toolkit for Stack Overflow Users",
     "default_icon": {
       "32": "src/media/32.png",
       "48": "src/media/48.png",
@@ -47,23 +42,41 @@
       "matches": [
         "https://stackoverflow.com/*",
         "https://*.stackoverflow.com/*",
-        "https://serverfault.com/*",
-        "https://*.serverfault.com/*",
         "https://superuser.com/*",
-        "https://*.superuser.com/*",
+        "https://serverfault.com/*",
         "https://askubuntu.com/*",
-        "https://*.askubuntu.com/*",
         "https://stackapps.com/*",
-        "https://*.stackapps.com/*",
-        "https://*.stackexchange.com/*",
         "https://mathoverflow.net/*",
-        "https://*.mathoverflow.net/*"
+        "https://*.mathoverflow.net/*",
+        "https://*.stackexchange.com/*"
       ],
       "js": [
-        "src/js/shared/config.js",
-        "src/js/content.js"
+        "src/js/document.js"
       ],
       "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/html/guide.html",
+        "src/html/modal_comment.html",
+        "src/json/*.json",
+        "src/json/lang/*.json",
+        "src/sound/received_post.mp3",
+        "src/sound/start.mp3"
+      ],
+      "matches": [
+        "https://stackoverflow.com/*",
+        "https://*.stackoverflow.com/*",
+        "https://superuser.com/*",
+        "https://serverfault.com/*",
+        "https://askubuntu.com/*",
+        "https://stackapps.com/*",
+        "https://mathoverflow.net/*",
+        "https://*.mathoverflow.net/*",
+        "https://*.stackexchange.com/*"
+      ]
     }
   ]
 }
